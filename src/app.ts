@@ -1,6 +1,7 @@
 import express, { Express, Request, Response } from 'express';
 import dotenv from 'dotenv';
 import { dataSource } from './config/database';
+import userRouter from './routes/user.routes';
 
 dotenv.config();
 
@@ -20,5 +21,7 @@ app.use(express.json());
 app.get('/', (req: Request, res: Response) => {
   res.send('Express + TypeScript Server');
 });
+
+app.use('/users', userRouter);
 
 export default app;
