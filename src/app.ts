@@ -2,6 +2,7 @@ import express, { Express, Request, Response } from 'express';
 import dotenv from 'dotenv';
 import { dataSource } from './config/database';
 import userRouter from './routes/user.routes';
+import { errorHandler } from './middlewares/error-handler';
 
 dotenv.config();
 
@@ -23,5 +24,7 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 app.use('/users', userRouter);
+
+app.use(errorHandler);
 
 export default app;
