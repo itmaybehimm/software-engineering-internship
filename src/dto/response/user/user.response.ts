@@ -1,16 +1,13 @@
-import { Exclude, Expose } from 'class-transformer';
 import { ROLE } from '../../../enums/user-role.enum';
+import { CustomExpose } from '../../../utils/decorators/class-transformer-custom/expose.decorator';
 
 export class UserProfileResponseDto {
-  @Expose()
-  id: number;
+  @CustomExpose()
+  id: number = -1;
 
-  @Expose()
-  username: string;
+  @CustomExpose()
+  username: string = '';
 
-  @Expose()
-  role: ROLE;
-
-  @Exclude()
-  password: string;
+  @CustomExpose()
+  role: ROLE = ROLE.USER;
 }

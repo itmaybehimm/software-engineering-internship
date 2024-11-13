@@ -8,7 +8,8 @@ import { LoginRequestDto } from '../dto/request/auth/login.dto';
 import { NotFoundError } from '../errors/not-found-error';
 import { UnauthorizedError } from '../errors/unauthorized-error';
 import { UserProfileResponseDto } from '../dto/response/user/user.response';
-import { plainToClass } from 'class-transformer';
+
+import { customPlainToClass } from '../utils/functions/transform';
 
 export class UserService {
   private userRepository: Repository<User>;
@@ -19,7 +20,7 @@ export class UserService {
 
   async getAllUsers(): Promise<UserProfileResponseDto[]> {
     const users = await this.userRepository.find();
-    return users.map((user) => plainToClass(UserProfileResponseDto, user));
+    return users.map((user) => customPlainToClass(UserProfileResponseDto, user));
   }
 
   async register(userData: RegisterRequestDto): Promise<UserProfileResponseDto> {
@@ -39,7 +40,7 @@ export class UserService {
     });
 
     const user = await this.userRepository.save(newUser);
-    return plainToClass(UserProfileResponseDto, user);
+    return customPlainToClass(UserProfileResponseDto, user);
   }
 
   async findOne(user: Partial<User>): Promise<UserProfileResponseDto> {
@@ -47,7 +48,7 @@ export class UserService {
     if (!existingUser) {
       throw new NotFoundError("User with specified criteria doesn't exist");
     }
-    return plainToClass(UserProfileResponseDto, user);
+    return customPlainToClass(UserProfileResponseDto, existingUser);
   }
 
   async validateUser(credentials: LoginRequestDto): Promise<UserProfileResponseDto> {
@@ -66,6 +67,6 @@ export class UserService {
       throw new UnauthorizedError('Invalid credentials');
     }
 
-    return plainToClass(UserProfileResponseDto, user);
+    return customPlainToClass(UserProfileResponseDto, user);
   }
 }

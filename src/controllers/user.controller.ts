@@ -2,7 +2,7 @@ import { RegisterRequestDto } from '../dto/request/auth/register.dto';
 import { BadRequestError } from '../errors/bad-request-error';
 import { UserService } from '../service/user.service';
 import { Request, Response } from 'express';
-import { asyncWrapper } from '../utils/async-wrapper';
+import { asyncWrapper } from '../utils/functions/async-wrapper';
 
 const userService = new UserService();
 
