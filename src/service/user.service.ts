@@ -1,9 +1,14 @@
 import { Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
 import { userRepository } from '../repositories/user.repository';
-import { RegisterRequestDto } from '../dto/request/register.dto';
+import { RegisterRequestDto } from '../dto/request/auth/register.dto';
 import bcrypt from 'bcrypt';
 import { BadRequestError } from '../errors/bad-request-error';
+import { LoginRequestDto } from '../dto/request/auth/login.dto';
+import { NotFoundError } from '../errors/not-found-error';
+import { UnauthorizedError } from '../errors/unauthorized-error';
+import { UserProfileResponseDto } from '../dto/response/user/user.response';
+import { plainToClass } from 'class-transformer';
 
 export class UserService {
   private userRepository: Repository<User>;
@@ -12,12 +17,12 @@ export class UserService {
     this.userRepository = userRepository;
   }
 
-  async getAllUsers(): Promise<User[]> {
+  async getAllUsers(): Promise<UserProfileResponseDto[]> {
     const users = await this.userRepository.find();
-    return users;
+    return users.map((user) => plainToClass(UserProfileResponseDto, user));
   }
 
-  async register(userData: RegisterRequestDto): Promise<User> {
+  async register(userData: RegisterRequestDto): Promise<UserProfileResponseDto> {
     const { username, password } = userData;
 
     // Check if the username already exists
@@ -33,6 +38,34 @@ export class UserService {
       password: hashedPassword,
     });
 
-    return this.userRepository.save(newUser);
+    const user = await this.userRepository.save(newUser);
+    return plainToClass(UserProfileResponseDto, user);
+  }
+
+  async findOne(user: Partial<User>): Promise<UserProfileResponseDto> {
+    const existingUser = await this.userRepository.findOne({ where: user });
+    if (!existingUser) {
+      throw new NotFoundError("User with specified criteria doesn't exist");
+    }
+    return plainToClass(UserProfileResponseDto, user);
+  }
+
+  async validateUser(credentials: LoginRequestDto): Promise<UserProfileResponseDto> {
+    const user = new User();
+    user.username = credentials.username;
+    user.password = credentials.password;
+
+    const existingUser = await this.userRepository.findOne({ where: user });
+
+    if (!existingUser) {
+      throw new NotFoundError("User with the specified username doesn't exist");
+    }
+
+    const passwordMatch = bcrypt.compareSync(credentials.password, existingUser.password);
+    if (!passwordMatch) {
+      throw new UnauthorizedError('Invalid credentials');
+    }
+
+    return plainToClass(UserProfileResponseDto, user);
   }
 }

@@ -5,5 +5,6 @@ export class InternalServerError extends Error {
     super(message);
     this.statusCode = 500;
     this.name = 'InternalServerError';
+    this.message = 'Internal Server Error';
   }
 }
