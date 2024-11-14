@@ -1,8 +1,9 @@
-import { NextFunction, Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 
-//can be done using express-async-errors library
-export const asyncWrapper = (fn) => {
-  return (req: Request, res: Response, next: NextFunction) => {
-    Promise.resolve(fn(req, res, next)).catch(next);
+export function asyncWrapper(
+  fn: (req: Request, res: Response, next: NextFunction) => Promise<void>,
+): (req: Request, res: Response, next: NextFunction) => Promise<void> {
+  return (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    return fn(req, res, next).catch(next);
   };
-};
+}

@@ -1,9 +1,10 @@
 import { Router } from 'express';
-import { getAllUsers, registerUser } from '../controllers/user.controller';
+import { userController } from '../controllers/user/user.controller';
+import passport from 'passport';
 
 const router = Router();
 
-router.get('/', getAllUsers);
-router.post('/register', registerUser);
+router.get('/', passport.authenticate('jwt', { session: false }), userController.getAllUsers);
+router.post('/register', userController.registerUser);
 
 export default router;

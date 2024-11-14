@@ -1,8 +1,11 @@
-import express, { Express, Request, Response } from 'express';
+import express, { Express } from 'express';
 import dotenv from 'dotenv';
-import { dataSource } from './config/database';
+import { dataSource } from './config/database/database.config';
 import userRouter from './routes/user.routes';
 import { errorHandler } from './middlewares/error-handler';
+import { authRouter } from './routes/auth.routes';
+import { initializePassport } from './config/passport/passport.config';
+import passport from 'passport';
 
 dotenv.config();
 
@@ -17,13 +20,13 @@ dataSource
 
 const app: Express = express();
 
+initializePassport();
+app.use(passport.initialize());
+
 app.use(express.json());
 
-app.get('/', (req: Request, res: Response) => {
-  res.send('Express + TypeScript Server');
-});
-
-app.use('/users', userRouter);
+app.use('/user', userRouter);
+app.use('/auth', authRouter);
 
 app.use(errorHandler);
 
