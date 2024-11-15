@@ -2,8 +2,7 @@
 
 import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
 import { JwtPayload } from 'jsonwebtoken';
-
-import { userService } from '../../../service/user/user.service';
+import { userService } from '../../../containers/container';
 
 export const jwtStrategy = new JwtStrategy(
   {

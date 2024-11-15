@@ -1,6 +1,6 @@
 import { Repository } from 'typeorm';
 import { User } from '../../entities/user.entity';
-import { userRepository } from '../../repositories/user.repository';
+
 import { RegisterRequestDto } from '../../dto/request/auth/register.dto';
 import bcrypt from 'bcrypt';
 import { BadRequestError } from '../../errors/bad-request-error';
@@ -12,7 +12,7 @@ import { UserProfileResponseDto } from '../../dto/response/user/user.response';
 import { customPlainToClass } from '../../utils/functions/transform';
 import { UserService } from '../../interfaces/services/user/user-service.interface';
 
-class UserServiceImpl implements UserService {
+export class UserServiceImpl implements UserService {
   private readonly userRepository: Repository<User>;
 
   constructor(userRepository: Repository<User>) {
@@ -102,5 +102,3 @@ class UserServiceImpl implements UserService {
     return customPlainToClass(UserProfileResponseDto, user);
   }
 }
-
-export const userService: UserService = new UserServiceImpl(userRepository);

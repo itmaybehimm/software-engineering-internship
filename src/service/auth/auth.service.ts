@@ -5,9 +5,8 @@ import bcrypt from 'bcrypt';
 import { UserService } from '../../interfaces/services/user/user-service.interface';
 import { UserProfileResponseDto } from '../../dto/response/user/user.response';
 import { AuthService } from '../../interfaces/services/auth/auth-service.interface';
-import { userService } from '../user/user.service';
 
-class AuthServiceImpl implements AuthService {
+export class AuthServiceImpl implements AuthService {
   private readonly userService: UserService;
 
   constructor(userService: UserService) {
@@ -67,5 +66,3 @@ class AuthServiceImpl implements AuthService {
     return { accessToken: newAccessToken, refreshToken: hashedRefreshToken };
   }
 }
-
-export const authService: AuthService = new AuthServiceImpl(userService);

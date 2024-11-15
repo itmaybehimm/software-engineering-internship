@@ -1,17 +1,12 @@
-import { Request, Response, NextFunction } from 'express';
-import { UnauthorizedError } from '../errors/unauthorized-error';
+import { Response, NextFunction } from 'express';
+
 import { ForbiddenError } from '../errors/forbidden-error';
-import { RequestUser } from '../types/request-user';
+
+import { AuthenticatedRequest } from '../types/authenticated-request';
 
 export function checkRoles(allowedRoles: string[]) {
-  return (req: Request, res: Response, next: NextFunction) => {
-    const user = req.user as RequestUser;
-
-    if (!user) {
-      throw new UnauthorizedError('No User associated with request');
-    }
-
-    if (!allowedRoles.includes(user.role)) {
+  return (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    if (!allowedRoles.includes(req.user.role)) {
       throw new ForbiddenError('User not authorized to access this endpoint');
     }
 

@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { userController } from '../controllers/user/user.controller';
 import passport from 'passport';
 import { checkRoles } from '../middlewares/roles.middleware';
 import { ROLE } from '../enums/user-role.enum';
+import { userController } from '../containers/container';
 
 const router = Router();
 
