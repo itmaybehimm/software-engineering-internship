@@ -41,6 +41,4 @@ router.delete(
   userController.deleteUser,
 );
 
-router.post('/register', userController.registerUser);
-
 export default router;

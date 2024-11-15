@@ -1,5 +1,4 @@
-import { RegisterRequestDto } from '../../../dto/request/auth/register.dto';
-import { NextFunction, Request, Response } from 'express';
+import { NextFunction, Response } from 'express';
 import { asyncWrapper } from '../../../utils/functions/async-wrapper';
 import { validateDto } from '../../../utils/functions/validate-dto';
 import { UserService } from '../services/user-service.interface';
@@ -15,19 +14,6 @@ export class UserControllerImpl implements UserController {
   constructor(userService: UserService) {
     this.userService = userService;
   }
-
-  registerUser = asyncWrapper(async (req: Request, res: Response) => {
-    const userData = plainToClass(RegisterRequestDto, req.body, {
-      excludeExtraneousValues: true,
-      exposeUnsetFields: false,
-    });
-
-    await validateDto(userData);
-
-    const user = await this.userService.register(userData);
-
-    res.status(201).send(user);
-  });
 
   getAllUsers = asyncWrapper(async (req: AuthenticatedRequest, res: Response) => {
     const users = await this.userService.getAllUsers();

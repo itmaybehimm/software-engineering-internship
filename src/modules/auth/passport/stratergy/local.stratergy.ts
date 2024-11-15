@@ -1,5 +1,5 @@
 import { Strategy as LocalStrategy } from 'passport-local';
-import { authService } from '../../../modules/auth/auth.module';
+import { authService } from '../../auth.module';
 
 export const localStrategy = new LocalStrategy(
   {

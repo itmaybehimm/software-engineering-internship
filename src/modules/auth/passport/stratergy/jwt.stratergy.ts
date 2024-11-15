@@ -1,6 +1,6 @@
 import { Strategy as JwtStrategy } from 'passport-jwt';
 import { JwtPayload } from 'jsonwebtoken';
-import { userService } from '../../../modules/user/user.module';
+import { userService } from '../../../user/user.module';
 
 const cookieExtractor = (req) => {
   if (req && req.cookies) {

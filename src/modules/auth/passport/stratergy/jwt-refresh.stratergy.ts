@@ -2,7 +2,7 @@ import { Strategy as JwtStrategy } from 'passport-jwt';
 import { JwtPayload } from 'jsonwebtoken';
 
 import { Request } from 'express';
-import { authService } from '../../../modules/auth/auth.module';
+import { authService } from '../../auth.module';
 
 const refreshCookieExtractor = (req) => {
   if (req && req.cookies) {
