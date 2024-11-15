@@ -1,19 +1,34 @@
-import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
+import { Strategy as JwtStrategy } from 'passport-jwt';
 import { JwtPayload } from 'jsonwebtoken';
-import { userService } from '../../../containers/container';
+import { authService } from '../../../containers/container';
+import { Request } from 'express';
 
-export const jwtStrategy = new JwtStrategy(
+const refreshCookieExtractor = (req) => {
+  if (req && req.cookies) {
+    return req.cookies.refreshToken;
+  }
+  return null;
+};
+
+export const jwtRefreshStrategy = new JwtStrategy(
   {
-    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-    secretOrKey: process.env.JWT_ACCESS_SECRET,
+    jwtFromRequest: refreshCookieExtractor,
+    secretOrKey: process.env.JWT_REFRESH_SECRET,
+    passReqToCallback: true,
   },
-  async (payload: JwtPayload, done) => {
+  async (req: Request, payload: JwtPayload, done) => {
     try {
-      const user = await userService.findOne({ id: parseInt(payload.sub) });
+      const userId = parseInt(payload.sub);
+      const reqRefreshToken = refreshCookieExtractor(req);
 
-      done(null, user);
+      const { accessToken, refreshToken } = await authService.refreshTokens(
+        { id: userId },
+        reqRefreshToken,
+      );
+
+      return done(null, { accessToken, refreshToken });
     } catch (error) {
-      done(error, false);
+      return done(error, false);
     }
   },
 );

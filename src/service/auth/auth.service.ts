@@ -1,10 +1,11 @@
 // auth.service.ts
 
-import jwt, { JwtPayload } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { UserService } from '../../interfaces/services/user/user-service.interface';
 import { UserProfileResponseDto } from '../../dto/response/user/user.response';
 import { AuthService } from '../../interfaces/services/auth/auth-service.interface';
+import { User } from '../../entities/user.entity';
 
 export class AuthServiceImpl implements AuthService {
   private readonly userService: UserService;
@@ -41,18 +42,17 @@ export class AuthServiceImpl implements AuthService {
 
   // Refresh token logic (validate the refresh token and issue new ones)
   async refreshTokens(
+    query: Partial<User>,
     refreshToken: string,
   ): Promise<{ accessToken: string; refreshToken: string }> {
-    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET) as JwtPayload;
-
-    const user = await this.userService.validateRefreshToken({ id: decoded.id }, refreshToken);
+    const user = await this.userService.validateRefreshToken({ id: query.id }, refreshToken);
 
     // Create new access and refresh tokens
-    const newAccessToken = jwt.sign({ sub: decoded.id }, process.env.JWT_ACCESS_SECRET, {
+    const newAccessToken = jwt.sign({ sub: query.id }, process.env.JWT_ACCESS_SECRET, {
       expiresIn: process.env.JWT_ACCESS_EXPIRES_IN,
     });
 
-    const newRefreshToken = jwt.sign({ sub: decoded.id }, process.env.JWT_REFRESH_SECRET, {
+    const newRefreshToken = jwt.sign({ sub: query.id }, process.env.JWT_REFRESH_SECRET, {
       expiresIn: process.env.JWT_REFRESH_EXPIRES_IN,
     });
 
