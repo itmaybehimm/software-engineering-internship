@@ -12,6 +12,14 @@ router.get(
   checkRoles([ROLE.ADMIN]),
   userController.getAllUsers,
 );
+
+router.get(
+  '/',
+  passport.authenticate('jwt', { session: false }),
+  checkRoles([ROLE.ADMIN]),
+  userController.getAllUsers,
+);
+
 router.post('/register', userController.registerUser);
 
 export default router;
