@@ -1,9 +1,10 @@
 import { IsOptional, IsString } from 'class-validator';
-import { CustomExpose } from '../../../utils/decorators/class-transformer-custom/expose.decorator';
+
+import { Expose } from 'class-transformer';
 
 export class UserUpdateRequestBodyDto {
   @IsOptional()
   @IsString({ message: 'Username must be a string' })
-  @CustomExpose()
+  @Expose()
   username: string;
 }

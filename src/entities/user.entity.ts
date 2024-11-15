@@ -9,10 +9,10 @@ export class User {
   @Column({ nullable: false, unique: true })
   username: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: false, select: false })
   password: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, select: false })
   refreshToken: string;
 
   @Column({ type: 'enum', enum: ROLE, default: ROLE.USER, nullable: false })

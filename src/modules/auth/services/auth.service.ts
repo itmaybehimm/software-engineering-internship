@@ -4,6 +4,7 @@ import { UserService } from '../../user/services/user-service.interface';
 import { UserProfileResponseDto } from '../../../dto/response/user/user.response';
 import { AuthService } from './auth-service.interface';
 import { User } from '../../../entities/user.entity';
+import { config } from '../../../config/config';
 
 export class AuthServiceImpl implements AuthService {
   private readonly userService: UserService;
@@ -23,12 +24,12 @@ export class AuthServiceImpl implements AuthService {
 
     const payload = { sub: user.id };
 
-    const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_SECRET, {
-      expiresIn: process.env.JWT_ACCESS_EXPIRES_IN,
+    const accessToken = jwt.sign(payload, config.jwt.accessSecret, {
+      expiresIn: config.jwt.accessExpiresIn,
     });
 
-    const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, {
-      expiresIn: process.env.JWT_REFRESH_EXPIRES_IN,
+    const refreshToken = jwt.sign(payload, config.jwt.refreshSecret, {
+      expiresIn: config.jwt.refreshExpiresIn,
     });
 
     const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
@@ -46,12 +47,12 @@ export class AuthServiceImpl implements AuthService {
     const user = await this.userService.validateRefreshToken({ id: query.id }, refreshToken);
 
     // Create new access and refresh tokens
-    const newAccessToken = jwt.sign({ sub: query.id }, process.env.JWT_ACCESS_SECRET, {
-      expiresIn: process.env.JWT_ACCESS_EXPIRES_IN,
+    const newAccessToken = jwt.sign({ sub: query.id }, config.jwt.accessSecret, {
+      expiresIn: config.jwt.accessExpiresIn,
     });
 
-    const newRefreshToken = jwt.sign({ sub: query.id }, process.env.JWT_REFRESH_SECRET, {
-      expiresIn: process.env.JWT_REFRESH_EXPIRES_IN,
+    const newRefreshToken = jwt.sign({ sub: query.id }, config.jwt.refreshSecret, {
+      expiresIn: config.jwt.refreshExpiresIn,
     });
 
     const hashedRefreshToken = await bcrypt.hash(newRefreshToken, 10);

@@ -52,16 +52,21 @@ export class UserServiceImpl implements UserService {
   }
 
   async validateCredentials(credentials: LoginRequestDto): Promise<UserProfileResponseDto> {
-    const user = await this.userRepository.findOne({ where: { username: credentials.username } });
+    const userPassword = await this.userRepository.findOne({
+      where: { username: credentials.username },
+      select: ['password'],
+    });
 
-    if (!user) {
+    if (!userPassword) {
       throw new NotFoundError("User with the specified username doesn't exist");
     }
 
-    const passwordMatch = bcrypt.compareSync(credentials.password, user.password);
+    const passwordMatch = bcrypt.compareSync(credentials.password, userPassword.password);
     if (!passwordMatch) {
       throw new UnauthorizedError('Invalid credentials');
     }
+
+    const user = await this.userRepository.findOne({ where: { username: credentials.username } });
 
     return plainToClass(UserProfileResponseDto, user, { excludeExtraneousValues: true });
   }
@@ -89,17 +94,22 @@ export class UserServiceImpl implements UserService {
     query: Partial<User>,
     refreshToken: string,
   ): Promise<UserProfileResponseDto> {
-    const user = await this.userRepository.findOneOrFail({ where: query });
+    const userRefreshToken = await this.userRepository.findOneOrFail({
+      where: query,
+      select: ['refreshToken'],
+    });
 
-    if (!user) {
+    if (!userRefreshToken) {
       throw new NotFoundError("User with specified criteria doesn't exist");
     }
 
-    const refreshMatch = bcrypt.compareSync(refreshToken, user.refreshToken);
+    const refreshMatch = bcrypt.compareSync(refreshToken, userRefreshToken.refreshToken);
 
     if (!refreshMatch) {
       throw new UnauthorizedError('Please Relogin');
     }
+
+    const user = await this.userRepository.findOne({ where: query });
 
     return plainToClass(UserProfileResponseDto, user, { excludeExtraneousValues: true });
   }

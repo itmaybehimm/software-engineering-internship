@@ -1,12 +1,13 @@
 import { RegisterRequestDto } from '../../../dto/request/auth/register.dto';
 import { NextFunction, Request, Response } from 'express';
 import { asyncWrapper } from '../../../utils/functions/async-wrapper';
-import { validateBodyAndAssignInPlace } from '../../../utils/functions/validate-dto-inplace';
+import { validateDto } from '../../../utils/functions/validate-dto';
 import { UserService } from '../services/user-service.interface';
 import { UserController } from './user-controller.interface';
 import { AuthenticatedRequest } from '../../../types/authenticated-request';
 import { BadRequestError } from '../../../errors/bad-request-error';
 import { UserUpdateRequestBodyDto } from '../../../dto/request/user/user.request';
+import { plainToClass } from 'class-transformer';
 
 export class UserControllerImpl implements UserController {
   private readonly userService: UserService;
@@ -16,9 +17,12 @@ export class UserControllerImpl implements UserController {
   }
 
   registerUser = asyncWrapper(async (req: Request, res: Response) => {
-    const userData = new RegisterRequestDto();
+    const userData = plainToClass(RegisterRequestDto, req.body, {
+      excludeExtraneousValues: true,
+      exposeUnsetFields: false,
+    });
 
-    await validateBodyAndAssignInPlace(userData, req);
+    await validateDto(userData);
 
     const user = await this.userService.register(userData);
 
@@ -44,11 +48,22 @@ export class UserControllerImpl implements UserController {
 
   updateUser = asyncWrapper(
     async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-      const userData = new UserUpdateRequestBodyDto();
+      const userDto = plainToClass(UserUpdateRequestBodyDto, req.body, {
+        excludeExtraneousValues: true,
+        exposeUnsetFields: false,
+      });
 
-      await validateBodyAndAssignInPlace(userData, req);
+      const userId = parseInt(req.params.userId);
 
-      res.status(200).json({ message: 'wait' });
+      if (userId == null || userId == undefined) {
+        throw new BadRequestError('id not supplied in params');
+      }
+
+      await validateDto(userDto);
+
+      const user = await this.userService.updateUserDetails({ id: userId }, userDto);
+
+      res.status(200).json({ user });
     },
   );
 
