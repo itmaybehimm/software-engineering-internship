@@ -1,11 +1,9 @@
-// auth.service.ts
-
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
-import { UserService } from '../../interfaces/services/user/user-service.interface';
-import { UserProfileResponseDto } from '../../dto/response/user/user.response';
-import { AuthService } from '../../interfaces/services/auth/auth-service.interface';
-import { User } from '../../entities/user.entity';
+import { UserService } from '../../user/services/user-service.interface';
+import { UserProfileResponseDto } from '../../../dto/response/user/user.response';
+import { AuthService } from './auth-service.interface';
+import { User } from '../../../entities/user.entity';
 
 export class AuthServiceImpl implements AuthService {
   private readonly userService: UserService;
@@ -18,7 +16,7 @@ export class AuthServiceImpl implements AuthService {
     username: string,
     password: string,
   ): Promise<{ accessToken: string; refreshToken: string }> {
-    const user: UserProfileResponseDto = await this.userService.validateUser({
+    const user: UserProfileResponseDto = await this.userService.validateCredentials({
       username,
       password,
     });
@@ -35,7 +33,7 @@ export class AuthServiceImpl implements AuthService {
 
     const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
 
-    await this.userService.updateUser(user, { refreshToken: hashedRefreshToken });
+    await this.userService.updateUserDetails(user, { refreshToken: hashedRefreshToken });
 
     return { accessToken, refreshToken };
   }
@@ -58,7 +56,7 @@ export class AuthServiceImpl implements AuthService {
 
     const hashedRefreshToken = await bcrypt.hash(newRefreshToken, 10);
 
-    await this.userService.updateUser(
+    await this.userService.updateUserDetails(
       { username: user.username },
       { refreshToken: hashedRefreshToken },
     );

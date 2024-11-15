@@ -1,6 +1,6 @@
 import { Strategy as JwtStrategy } from 'passport-jwt';
 import { JwtPayload } from 'jsonwebtoken';
-import { userService } from '../../../containers/container';
+import { userService } from '../../../modules/user/user.module';
 
 const cookieExtractor = (req) => {
   if (req && req.cookies) {
@@ -16,7 +16,7 @@ export const jwtStrategy = new JwtStrategy(
   },
   async (payload: JwtPayload, done) => {
     try {
-      const user = await userService.findOne({ id: parseInt(payload.sub) });
+      const user = await userService.findUser({ id: parseInt(payload.sub) });
 
       if (user) {
         return done(null, user);

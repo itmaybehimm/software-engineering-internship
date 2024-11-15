@@ -5,9 +5,13 @@ import { User } from '../../../entities/user.entity';
 
 export interface UserService {
   getAllUsers(): Promise<UserProfileResponseDto[]>;
+  findUser(userCriteria: Partial<User>): Promise<UserProfileResponseDto>;
   register(userData: RegisterRequestDto): Promise<UserProfileResponseDto>;
-  findOne(user: Partial<User>): Promise<UserProfileResponseDto>;
-  validateUser(credentials: LoginRequestDto): Promise<UserProfileResponseDto>;
-  updateUser(user: Partial<User>, options: Partial<User>): Promise<UserProfileResponseDto>;
+  validateCredentials(credentials: LoginRequestDto): Promise<UserProfileResponseDto>;
+  updateUserDetails(
+    userCriteria: Partial<User>,
+    updateOptions: Partial<User>,
+  ): Promise<UserProfileResponseDto>;
   validateRefreshToken(user: Partial<User>, refreshToken: string): Promise<UserProfileResponseDto>;
+  deleteUsers(userCriteria: Partial<User>): Promise<number>;
 }

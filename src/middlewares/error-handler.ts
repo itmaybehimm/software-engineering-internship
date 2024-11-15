@@ -2,7 +2,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { ValidationError } from '../errors/validation-error';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const errorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
   if (err instanceof ValidationError) {
     return res.status(err.statusCode).json({
