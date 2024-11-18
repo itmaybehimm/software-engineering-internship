@@ -6,6 +6,7 @@ import { authRouter } from './routes/auth.routes';
 import { initializePassport } from './modules/auth/passport/passport.config';
 import passport from 'passport';
 import cookieParser from 'cookie-parser';
+import { setupSwagger } from './config/swagger-config';
 
 dataSource
   .initialize()
@@ -23,6 +24,7 @@ app.use(passport.initialize());
 
 app.use(express.json());
 app.use(cookieParser());
+setupSwagger(app);
 
 app.use('/user', userRouter);
 app.use('/auth', authRouter);

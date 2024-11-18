@@ -1,5 +1,5 @@
 import { RegisterRequestDto } from '../../../dto/request/auth/register.dto';
-import { UserProfileResponseDto } from '../../../dto/response/user/user.response';
+import { UserProfileResponseDto } from '../../../dto/response/user/user-response.dto';
 import { LoginRequestDto } from '../../../dto/request/auth/login.dto';
 import { User } from '../../../entities/user.entity';
 
@@ -14,4 +14,5 @@ export interface UserService {
   ): Promise<UserProfileResponseDto>;
   validateRefreshToken(user: Partial<User>, refreshToken: string): Promise<UserProfileResponseDto>;
   deleteUsers(userCriteria: Partial<User>): Promise<number>;
+  isOwner: (userId: number, resourceId: number) => Promise<boolean>;
 }

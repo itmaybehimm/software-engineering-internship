@@ -2,7 +2,8 @@ import { Router } from 'express';
 import passport from 'passport';
 import { checkRoles } from '../middlewares/roles.middleware';
 import { ROLE } from '../enums/user-role.enum';
-import { userController } from '../modules/user/user.module';
+import { userController, userService } from '../modules/user/user.module';
+import { checkOwnership } from '../middlewares/ownership.middleware';
 
 const router = Router();
 
@@ -23,14 +24,14 @@ router.get(
 router.get(
   '/:userId',
   passport.authenticate('jwt', { session: false }),
-  checkRoles([ROLE.ADMIN]),
+  checkOwnership(userService, 'userId'),
   userController.getUser,
 );
 
 router.patch(
   '/:userId',
   passport.authenticate('jwt', { session: false }),
-  checkRoles([ROLE.ADMIN]),
+  checkOwnership(userService, 'userId'),
   userController.updateUser,
 );
 

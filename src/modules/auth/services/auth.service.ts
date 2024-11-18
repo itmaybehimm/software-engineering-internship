@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { UserService } from '../../user/services/user-service.interface';
-import { UserProfileResponseDto } from '../../../dto/response/user/user.response';
+import { UserProfileResponseDto } from '../../../dto/response/user/user-response.dto';
 import { AuthService } from './auth-service.interface';
 import { User } from '../../../entities/user.entity';
 import { config } from '../../../config/config';

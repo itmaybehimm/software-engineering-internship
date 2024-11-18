@@ -4,8 +4,12 @@ import { validateDto } from '../../../utils/functions/validate-dto';
 import { UserService } from '../services/user-service.interface';
 import { UserController } from './user-controller.interface';
 import { AuthenticatedRequest } from '../../../types/authenticated-request';
-import { BadRequestError } from '../../../errors/bad-request-error';
-import { UserUpdateRequestBodyDto } from '../../../dto/request/user/user.request';
+import {
+  UserDeleteRequestParamDto,
+  UserRetriveRequestParamDto,
+  UserUpdateRequestBodyDto,
+  UserUpdateRequestParamDto,
+} from '../../../dto/request/user/user-request.dto';
 import { plainToClass } from 'class-transformer';
 
 export class UserControllerImpl implements UserController {
@@ -17,19 +21,22 @@ export class UserControllerImpl implements UserController {
 
   getAllUsers = asyncWrapper(async (req: AuthenticatedRequest, res: Response) => {
     const users = await this.userService.getAllUsers();
-    res.status(200).json(users);
+
+    res.status(200).json({ data: { users: users } });
   });
 
   getUser = asyncWrapper(async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-    const userId = parseInt(req.params.userId);
+    const userRetriveParamDto = plainToClass(UserRetriveRequestParamDto, req.params, {
+      excludeExtraneousValues: true,
+      exposeUnsetFields: false,
+    });
+    await validateDto(userRetriveParamDto);
 
-    if (userId == null || userId == undefined) {
-      throw new BadRequestError('id not supplied in params');
-    }
+    const userCriteria = { id: userRetriveParamDto.userId };
 
-    const user = await this.userService.findUser({ id: userId });
+    const user = await this.userService.findUser(userCriteria);
 
-    res.status(200).json(user);
+    res.status(200).json({ data: { user: user } });
   });
 
   updateUser = asyncWrapper(
@@ -39,15 +46,17 @@ export class UserControllerImpl implements UserController {
         exposeUnsetFields: false,
       });
 
-      const userId = parseInt(req.params.userId);
+      const userUpdateParamDto = plainToClass(UserUpdateRequestParamDto, req.params, {
+        excludeExtraneousValues: true,
+        exposeUnsetFields: false,
+      });
 
-      if (userId == null || userId == undefined) {
-        throw new BadRequestError('id not supplied in params');
-      }
-
+      await validateDto(userUpdateParamDto);
       await validateDto(userDto);
 
-      const user = await this.userService.updateUserDetails({ id: userId }, userDto);
+      const userCriteria = { id: userUpdateParamDto.userId };
+
+      const user = await this.userService.updateUserDetails(userCriteria, userDto);
 
       res.status(200).json({ user });
     },
@@ -55,13 +64,15 @@ export class UserControllerImpl implements UserController {
 
   deleteUser = asyncWrapper(
     async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-      const userId = parseInt(req.params.userId);
+      const userDeleteRequestParamDto = plainToClass(UserDeleteRequestParamDto, req.params, {
+        excludeExtraneousValues: true,
+        exposeUnsetFields: false,
+      });
 
-      if (userId == null || userId == undefined) {
-        throw new BadRequestError('id not supplied in params');
-      }
+      await validateDto(userDeleteRequestParamDto);
 
-      const affected = await this.userService.deleteUsers({ id: userId });
+      const userCriteria = { id: userDeleteRequestParamDto.userId };
+      const affected = await this.userService.deleteUsers(userCriteria);
 
       res.status(200).json({ message: `Deleted ${affected} users` });
     },

@@ -7,7 +7,7 @@ import { BadRequestError } from '../../../errors/bad-request-error';
 import { LoginRequestDto } from '../../../dto/request/auth/login.dto';
 import { NotFoundError } from '../../../errors/not-found-error';
 import { UnauthorizedError } from '../../../errors/unauthorized-error';
-import { UserProfileResponseDto } from '../../../dto/response/user/user.response';
+import { UserProfileResponseDto } from '../../../dto/response/user/user-response.dto';
 
 import { UserService } from './user-service.interface';
 import { plainToClass } from 'class-transformer';
@@ -27,7 +27,10 @@ export class UserServiceImpl implements UserService {
   }
 
   async findUser(userCriteria: Partial<User>): Promise<UserProfileResponseDto> {
-    const user = await this.userRepository.findOneOrFail({ where: userCriteria });
+    const user = await this.userRepository.findOne({ where: userCriteria });
+    if (!user) {
+      throw new NotFoundError('User not found');
+    }
     return plainToClass(UserProfileResponseDto, user, { excludeExtraneousValues: true });
   }
 
@@ -75,17 +78,14 @@ export class UserServiceImpl implements UserService {
     userCriteria: Partial<User>,
     updateOptions: Partial<User>,
   ): Promise<UserProfileResponseDto> {
-    const result = await this.userRepository.update(userCriteria, updateOptions);
-
-    if (result.affected === 0) {
+    const existingUser = await this.userRepository.findOne({ where: userCriteria });
+    if (!existingUser) {
       throw new NotFoundError("User with specified criteria doesn't exist");
     }
 
-    const updatedUser = await this.userRepository.findOne({ where: userCriteria });
+    const updatedUser = this.userRepository.merge(existingUser, updateOptions);
 
-    if (!updatedUser) {
-      throw new NotFoundError("User with specified criteria doesn't exist");
-    }
+    await this.userRepository.save(updatedUser);
 
     return plainToClass(UserProfileResponseDto, updatedUser, { excludeExtraneousValues: true });
   }
@@ -122,5 +122,9 @@ export class UserServiceImpl implements UserService {
     }
 
     return deleteResult.affected;
+  }
+
+  async isOwner(userId: number, resourceId: number): Promise<boolean> {
+    return userId === resourceId;
   }
 }
