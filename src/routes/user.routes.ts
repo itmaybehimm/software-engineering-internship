@@ -4,6 +4,7 @@ import { checkRoles } from '../middlewares/roles.middleware';
 import { ROLE } from '../enums/user-role.enum';
 import { userController, userService } from '../modules/user/user.module';
 import { checkOwnership } from '../middlewares/ownership.middleware';
+import { addUserFilterMiddleware } from '../middlewares/user-filter.middlware';
 
 const router = Router();
 
@@ -24,7 +25,7 @@ router.get(
 router.get(
   '/:userId',
   passport.authenticate('jwt', { session: false }),
-  checkOwnership(userService, 'userId'),
+  addUserFilterMiddleware,
   userController.getUser,
 );
 

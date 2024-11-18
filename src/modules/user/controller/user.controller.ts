@@ -33,8 +33,9 @@ export class UserControllerImpl implements UserController {
     await validateDto(userRetriveParamDto);
 
     const userCriteria = { id: userRetriveParamDto.userId };
+    const userFilterId = req.userFilter.userId;
 
-    const user = await this.userService.findUser(userCriteria);
+    const user = await this.userService.findUser(userCriteria, userFilterId);
 
     res.status(200).json({ data: { user: user } });
   });

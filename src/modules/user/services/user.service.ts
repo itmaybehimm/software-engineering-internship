@@ -11,6 +11,7 @@ import { UserProfileResponseDto } from '../../../dto/response/user/user-response
 
 import { UserService } from './user-service.interface';
 import { plainToClass } from 'class-transformer';
+import { ForbiddenError } from '../../../errors/forbidden-error';
 
 export class UserServiceImpl implements UserService {
   private readonly userRepository: Repository<User>;
@@ -26,7 +27,23 @@ export class UserServiceImpl implements UserService {
     );
   }
 
-  async findUser(userCriteria: Partial<User>): Promise<UserProfileResponseDto> {
+  async findUser(
+    userCriteria: Partial<User>,
+    userFilterId: number | null,
+  ): Promise<UserProfileResponseDto> {
+    // Ensure the ID in userCriteria matches the authenticated user's ID (userFilterId)
+    if (userFilterId && userCriteria.id !== userFilterId) {
+      throw new ForbiddenError("You are not authorized to access this user's data");
+    }
+
+    // For other resources say procut
+    // const products = await this.userRepository.findOne({
+    //   where: {
+    //     userId: userFilterId,        // Ensure the current user's ID matches the 'userFilterId'
+    //     ...productCriteria
+    //   },
+    // });
+
     const user = await this.userRepository.findOne({ where: userCriteria });
     if (!user) {
       throw new NotFoundError('User not found');

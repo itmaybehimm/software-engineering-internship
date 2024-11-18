@@ -16,7 +16,7 @@ export const jwtStrategy = new JwtStrategy(
   },
   async (payload: JwtPayload, done) => {
     try {
-      const user = await userService.findUser({ id: parseInt(payload.sub) });
+      const user = await userService.findUser({ id: parseInt(payload.sub) }, null);
 
       if (user) {
         return done(null, user);
