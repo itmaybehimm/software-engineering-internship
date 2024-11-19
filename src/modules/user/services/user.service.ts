@@ -127,6 +127,8 @@ export class UserServiceImpl implements UserService {
 
     await this.userRepository.save(updatedUser);
 
+    this.eventBus.emit('userUpdated', userId);
+
     return plainToClass(UserProfileResponseDto, updatedUser, { excludeExtraneousValues: true });
   }
 
