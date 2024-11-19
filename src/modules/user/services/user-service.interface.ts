@@ -3,9 +3,10 @@ import { UserProfileResponseDto } from '../../../dto/response/user/user-response
 import { LoginRequestDto } from '../../../dto/request/auth/login.dto';
 import { User } from '../../../entities/user.entity';
 import { AuthenticatedRequest } from '../../../types/authenticated-request';
+import { PaginationParams } from '../../../dto/pagination/pagination.dto';
 
 export interface UserService {
-  getAllUsers(): Promise<UserProfileResponseDto[]>;
+  getAllUsers(paginationParams: PaginationParams): Promise<UserProfileResponseDto[]>;
   findUserNonFiltered(userCriteria: Partial<User>): Promise<UserProfileResponseDto>;
   findUser(req: AuthenticatedRequest, userCriteria: Partial<User>): Promise<UserProfileResponseDto>;
   register(userData: RegisterRequestDto): Promise<UserProfileResponseDto>;

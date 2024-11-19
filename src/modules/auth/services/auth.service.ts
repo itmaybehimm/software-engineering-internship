@@ -62,6 +62,6 @@ export class AuthServiceImpl implements AuthService {
       { refreshToken: hashedRefreshToken },
     );
 
-    return { accessToken: newAccessToken, refreshToken: hashedRefreshToken };
+    return { accessToken: newAccessToken, refreshToken: newRefreshToken };
   }
 }

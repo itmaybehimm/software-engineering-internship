@@ -11,6 +11,8 @@ import {
   UserUpdateRequestParamDto,
 } from '../../../dto/request/user/user-request.dto';
 import { plainToClass } from 'class-transformer';
+import { getPaginationParams } from '../../../dto/pagination/pagination.dto';
+import { PaginationFormat, ResponseFormat } from '../../../utils/response-format';
 
 export class UserControllerImpl implements UserController {
   private readonly userService: UserService;
@@ -20,9 +22,23 @@ export class UserControllerImpl implements UserController {
   }
 
   getAllUsers = asyncWrapper(async (req: AuthenticatedRequest, res: Response) => {
-    const users = await this.userService.getAllUsers();
+    const paginationParams = getPaginationParams(req);
 
-    res.status(200).json({ data: { users: users } });
+    const users = await this.userService.getAllUsers(paginationParams);
+
+    const pagination: PaginationFormat = {
+      currentPage: paginationParams.page,
+      pageSize: paginationParams.size,
+    };
+
+    const response: ResponseFormat<typeof users> = {
+      status: 200,
+      message: 'Users retrieved successfully',
+      data: users,
+      pagination: pagination,
+    };
+
+    res.status(200).json(response);
   });
 
   getUser = asyncWrapper(async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
@@ -30,13 +46,19 @@ export class UserControllerImpl implements UserController {
       excludeExtraneousValues: true,
       exposeUnsetFields: false,
     });
-    validateDto(userRetriveParamDto);
+    await validateDto(userRetriveParamDto);
 
     const userCriteria = { id: userRetriveParamDto.userId };
 
     const user = await this.userService.findUser(req, userCriteria);
 
-    res.status(200).json({ data: { user: user } });
+    const response: ResponseFormat<typeof user> = {
+      status: 200,
+      message: 'User retrieved successfully',
+      data: user,
+    };
+
+    res.status(200).json(response);
   });
 
   updateUser = asyncWrapper(
@@ -58,7 +80,13 @@ export class UserControllerImpl implements UserController {
 
       const user = await this.userService.updateUserDetails(req, userCriteria, userDto);
 
-      res.status(200).json({ user });
+      const response: ResponseFormat<typeof user> = {
+        status: 200,
+        message: 'User updated successfully',
+        data: user,
+      };
+
+      res.status(200).json(response);
     },
   );
 
@@ -74,7 +102,12 @@ export class UserControllerImpl implements UserController {
       const userCriteria = { id: userDeleteRequestParamDto.userId };
       const affected = await this.userService.deleteUsers(userCriteria);
 
-      res.status(200).json({ message: `Deleted ${affected} users` });
+      const response: ResponseFormat<null> = {
+        status: 200,
+        message: `Deleted ${affected} users`,
+      };
+
+      res.status(200).json(response);
     },
   );
 }

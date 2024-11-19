@@ -16,6 +16,7 @@ import { Filtered } from '../../../utils/decorators/user-filter/filtered.decorat
 import { AuthenticatedRequest } from '../../../types/authenticated-request';
 // import { EmitEvent } from '../../../utils/decorators/event-emitter/emit-event.decorator';
 import { VerifyEvent } from '../../../utils/decorators/event-emitter/verify-event.edcorator';
+import { PaginationParams } from '../../../dto/pagination/pagination.dto';
 
 export class UserServiceImpl implements UserService {
   private readonly userRepository: Repository<User>;
@@ -27,8 +28,15 @@ export class UserServiceImpl implements UserService {
     this.eventBus = eventBus;
   }
 
-  async getAllUsers(): Promise<UserProfileResponseDto[]> {
-    const users = await this.userRepository.find();
+  async getAllUsers(paginationParams: PaginationParams): Promise<UserProfileResponseDto[]> {
+    const skip = (paginationParams.page - 1) * paginationParams.size;
+    const take = paginationParams.size;
+
+    const users = await this.userRepository.find({
+      skip,
+      take,
+    });
+
     return users.map((user) =>
       plainToClass(UserProfileResponseDto, user, { excludeExtraneousValues: true }),
     );
