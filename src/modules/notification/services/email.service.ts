@@ -37,7 +37,7 @@ export class EmailService implements NotificationService {
       };
 
       await this.transporter.sendMail(mailOptions);
-      console.log(`Email sent to himansupradhan472@gmail.com`);
+      console.log(`Email sent `);
     } catch (error) {
       console.error('Error sending email:', error);
     }
