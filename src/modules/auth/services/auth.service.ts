@@ -34,7 +34,7 @@ export class AuthServiceImpl implements AuthService {
 
     const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
 
-    await this.userService.updateUserDetails(user, { refreshToken: hashedRefreshToken });
+    await this.userService.updateUserDetailsNonFiltered(user, { refreshToken: hashedRefreshToken });
 
     return { accessToken, refreshToken };
   }
@@ -57,7 +57,7 @@ export class AuthServiceImpl implements AuthService {
 
     const hashedRefreshToken = await bcrypt.hash(newRefreshToken, 10);
 
-    await this.userService.updateUserDetails(
+    await this.userService.updateUserDetailsNonFiltered(
       { username: user.username },
       { refreshToken: hashedRefreshToken },
     );

@@ -7,6 +7,7 @@ import { NotFoundError } from '../errors/not-found-error';
 import { UnauthorizedError } from '../errors/unauthorized-error';
 import { ForbiddenError } from '../errors/forbidden-error';
 import { QueryFailedError } from 'typeorm';
+import logger from '../config/winston-config';
 
 export const errorHandler = (err: unknown, req: Request, res: Response, next: NextFunction) => {
   if (err instanceof ValidationError) {
@@ -30,6 +31,9 @@ export const errorHandler = (err: unknown, req: Request, res: Response, next: Ne
     });
   }
 
+  logger.error('An error occured', err);
+  console.error(err);
+
   if (err instanceof QueryFailedError) {
     return res.status(400).json({
       message: [err.driverError.detail, err.driverError.message],
@@ -38,6 +42,9 @@ export const errorHandler = (err: unknown, req: Request, res: Response, next: Ne
   }
 
   // Generic fallback for unhandled errors
-  console.error(err); // Log the error for debugging
+  if (err instanceof Error) {
+    res.status(500).json({ message: err.message });
+  }
+
   res.status(500).json({ message: 'Something went wrong' });
 };

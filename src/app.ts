@@ -7,6 +7,8 @@ import { initializePassport } from './modules/auth/passport/passport.config';
 import passport from 'passport';
 import cookieParser from 'cookie-parser';
 import { setupSwagger } from './config/swagger-config';
+import morgan from 'morgan';
+import logger from './config/winston-config';
 
 dataSource
   .initialize()
@@ -21,7 +23,7 @@ const app: Express = express();
 
 initializePassport();
 app.use(passport.initialize());
-
+app.use(morgan('combined', { stream: { write: (message) => logger.info(message.trim()) } }));
 app.use(express.json());
 app.use(cookieParser());
 setupSwagger(app);

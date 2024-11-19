@@ -1,9 +1,9 @@
-import { Response, NextFunction } from 'express';
-import { AuthenticatedRequest } from '../types/authenticated-request';
-import { BadRequestError } from '../errors/bad-request-error';
+import { NextFunction, Response } from 'express';
 import { ROLE } from '../enums/user-role.enum';
+import { BadRequestError } from '../errors/bad-request-error';
+import { AuthenticatedRequest } from '../types/authenticated-request';
 
-export const addUserFilterMiddleware = (
+export const addUserFilterMiddleware = async (
   req: AuthenticatedRequest,
   res: Response,
   next: NextFunction,
@@ -13,15 +13,16 @@ export const addUserFilterMiddleware = (
 
     if (req.user.role == ROLE.ADMIN) {
       req.userFilter = { userId: null };
-      next();
+    } else {
+      req.userFilter = { userId: userId };
     }
 
     if (!userId) {
       throw new BadRequestError('User id invalid');
     }
-    req.userFilter = { userId: userId };
   } catch (error) {
     next(error);
   }
+
   next();
 };

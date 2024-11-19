@@ -21,4 +21,9 @@ export const config = {
     refreshSecret: process.env.JWT_REFRESH_SECRET,
     refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN,
   },
+
+  email: {
+    gmailUsername: process.env.GMAIL_USERNAME,
+    gmailPassword: process.env.GMAIL_PASSWORD,
+  },
 };

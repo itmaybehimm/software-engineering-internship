@@ -30,12 +30,11 @@ export class UserControllerImpl implements UserController {
       excludeExtraneousValues: true,
       exposeUnsetFields: false,
     });
-    await validateDto(userRetriveParamDto);
+    validateDto(userRetriveParamDto);
 
     const userCriteria = { id: userRetriveParamDto.userId };
-    const userFilterId = req.userFilter.userId;
 
-    const user = await this.userService.findUser(userCriteria, userFilterId);
+    const user = await this.userService.findUser(req, userCriteria);
 
     res.status(200).json({ data: { user: user } });
   });
@@ -57,7 +56,7 @@ export class UserControllerImpl implements UserController {
 
       const userCriteria = { id: userUpdateParamDto.userId };
 
-      const user = await this.userService.updateUserDetails(userCriteria, userDto);
+      const user = await this.userService.updateUserDetails(req, userCriteria, userDto);
 
       res.status(200).json({ user });
     },
