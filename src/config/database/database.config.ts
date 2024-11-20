@@ -9,5 +9,6 @@ export const dataSource = new DataSource({
   password: config.db.password,
   database: config.db.database,
   entities: ['src/entities/*.js', 'src/entities/*.ts'],
-  synchronize: true,
+  migrations: ['src/migrations/*.ts'],
+  synchronize: false,
 });

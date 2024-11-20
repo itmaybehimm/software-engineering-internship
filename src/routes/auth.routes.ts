@@ -1,10 +1,8 @@
 import { Router } from 'express';
 import passport from 'passport';
-import { AuthController } from '../modules/auth/controllers/auth.controller';
-import { userService } from '../modules/user/user.module';
+import { authController } from '../modules/auth/auth.module';
 
 export const authRouter = Router();
-const authController = new AuthController(userService);
 
 /**
  * @swagger

@@ -16,8 +16,12 @@ export function Filtered() {
 
       const userFilterId = req.userFilter.userId;
       const filterCriteria = args[1] || {};
-      const modifiedCriteria = { ...filterCriteria, userId: userFilterId };
 
+      let modifiedCriteria = { ...filterCriteria };
+
+      if (userFilterId) {
+        modifiedCriteria = { ...modifiedCriteria, userId: userFilterId };
+      }
       return await originalMethod.apply(this, [req, modifiedCriteria, ...args.slice(2)]);
     };
 

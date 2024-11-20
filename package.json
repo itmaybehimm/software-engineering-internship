@@ -4,7 +4,9 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon src/index.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "migration:generate": "npx ts-node ./node_modules/typeorm/cli.js migration:generate ./src/migrations/$npm_config_name --dataSource ./src/config/database/database.config.ts",
+    "migration:run": "npx ts-node ./node_modules/typeorm/cli.js migration:run --dataSource ./src/config/database/database.config.ts"
   },
   "author": "",
   "license": "ISC",
@@ -36,7 +38,6 @@
     "reflect-metadata": "^0.2.2",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
-    "typeorm": "^0.3.20",
     "winston": "^3.17.0"
   },
   "devDependencies": {
@@ -46,8 +47,15 @@
     "@types/passport": "^1.0.17",
     "@types/passport-local": "^1.0.38",
     "@types/pg": "^8.11.10",
+    "chai": "^5.1.2",
     "eslint": "^9.14.0",
     "globals": "^15.12.0",
+    "mocha": "^10.8.2",
+    "sinon": "^19.0.2",
+    "supertest": "^7.0.0",
+    "ts-node": "^10.9.2",
+    "typeorm": "^0.3.20",
+    "typeorm-ts-node-esm": "^0.3.20",
     "typescript": "^5.6.3",
     "typescript-eslint": "^8.14.0",
     "winston-daily-rotate-file": "^5.0.0"

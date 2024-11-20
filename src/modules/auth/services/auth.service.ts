@@ -5,6 +5,7 @@ import { UserProfileResponseDto } from '../../../dto/response/user/user-response
 import { AuthService } from './auth-service.interface';
 import { User } from '../../../entities/user.entity';
 import { config } from '../../../config/config';
+import { RegisterRequestDto } from '../../../dto/request/auth/register.dto';
 
 export class AuthServiceImpl implements AuthService {
   private readonly userService: UserService;
@@ -63,5 +64,10 @@ export class AuthServiceImpl implements AuthService {
     );
 
     return { accessToken: newAccessToken, refreshToken: newRefreshToken };
+  }
+
+  async register(userData: RegisterRequestDto): Promise<UserProfileResponseDto> {
+    const data = await this.userService.register(userData);
+    return data;
   }
 }

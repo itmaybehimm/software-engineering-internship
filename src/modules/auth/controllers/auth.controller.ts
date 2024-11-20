@@ -1,17 +1,18 @@
 import { Request, Response } from 'express';
-import { UserService } from '../../user/services/user-service.interface';
+
 import { asyncWrapper } from '../../../utils/functions/async-wrapper';
 import { plainToClass } from 'class-transformer';
 import { RegisterRequestDto } from '../../../dto/request/auth/register.dto';
 import { validateDto } from '../../../utils/functions/validate-dto';
 import { ResponseFormat } from '../../../utils/response-format';
 import { config } from '../../../config/config';
+import { AuthService } from '../services/auth-service.interface';
 
 export class AuthController {
-  private readonly userService: UserService;
+  private readonly authService: AuthService;
 
-  constructor(userService: UserService) {
-    this.userService = userService;
+  constructor(authService: AuthService) {
+    this.authService = authService;
   }
 
   login = asyncWrapper(async (req: Request, res: Response) => {
@@ -71,7 +72,7 @@ export class AuthController {
 
       await validateDto(registerDto);
 
-      const user = await this.userService.register(req.body);
+      const user = await this.authService.register(req.body);
 
       const response: ResponseFormat<typeof user> = {
         status: 201,

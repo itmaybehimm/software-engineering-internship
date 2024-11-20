@@ -9,5 +9,8 @@ export class UserProfileResponseDto {
   username: string;
 
   @Expose()
+  email: string;
+
+  @Expose()
   role: ROLE;
 }

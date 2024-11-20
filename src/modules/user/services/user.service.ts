@@ -14,9 +14,10 @@ import { plainToClass } from 'class-transformer';
 import { ForbiddenError } from '../../../errors/forbidden-error';
 import { Filtered } from '../../../utils/decorators/user-filter/filtered.decorator';
 import { AuthenticatedRequest } from '../../../types/authenticated-request';
-// import { EmitEvent } from '../../../utils/decorators/event-emitter/emit-event.decorator';
+
 import { VerifyEvent } from '../../../utils/decorators/event-emitter/verify-event.edcorator';
 import { PaginationParams } from '../../../dto/pagination/pagination.dto';
+import { NotificationEventDto } from '../../../dto/event/user/user-event.dto';
 
 export class UserServiceImpl implements UserService {
   private readonly userRepository: Repository<User>;
@@ -84,7 +85,7 @@ export class UserServiceImpl implements UserService {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = this.userRepository.create({
-      username,
+      ...userData,
       password: hashedPassword,
     });
 
@@ -113,7 +114,7 @@ export class UserServiceImpl implements UserService {
   }
 
   @Filtered()
-  @VerifyEvent('userUpdated')
+  @VerifyEvent('sendNotification')
   async updateUserDetails(
     req: AuthenticatedRequest,
     userCriteria: Partial<User>,
@@ -135,7 +136,13 @@ export class UserServiceImpl implements UserService {
 
     await this.userRepository.save(updatedUser);
 
-    this.eventBus.emit('userUpdated', userId);
+    const notificationMessage: NotificationEventDto = {
+      message: `It is to notify you that your id was updated by - ${userId ? updatedUser.username : 'admin'}`,
+      subject: `Id updated`,
+      email: updatedUser.email,
+    };
+
+    this.eventBus.emit('sendNotification', notificationMessage);
 
     return plainToClass(UserProfileResponseDto, updatedUser, { excludeExtraneousValues: true });
   }

@@ -1,4 +1,5 @@
 import { config } from '../../../config/config';
+import { NotificationEventDto } from '../../../dto/event/user/user-event.dto';
 import { NotificationService } from './notification-service.interface';
 import nodemailer from 'nodemailer';
 
@@ -7,7 +8,6 @@ export class EmailService implements NotificationService {
   private eventBus;
 
   constructor(eventBus) {
-    // Configure the email transporter (e.g., using Nodemailer)
     this.transporter = nodemailer.createTransport({
       service: 'Gmail',
       host: 'smtp.gmail.com',
@@ -21,23 +21,26 @@ export class EmailService implements NotificationService {
 
     this.eventBus = eventBus;
 
-    this.eventBus.on('userUpdated', (userId: number) => {
-      this.sendAsync(userId);
+    this.eventBus.on('sendNotification', (notificationEventDto: NotificationEventDto) => {
+      this.sendAsync(notificationEventDto);
     });
   }
 
-  async sendAsync(userId: number): Promise<void> {
+  async sendAsync(notificationEventDto: NotificationEventDto): Promise<void> {
     try {
       // Send the email
+      if (!notificationEventDto.email) {
+        throw new Error('No email provided');
+      }
+
       const mailOptions = {
         from: config.email.gmailUsername,
-        to: '077bct030.himanshu@pcampus.edu.np',
-        subject: 'Notification',
-        text: `user changed by- ${userId}`,
+        to: notificationEventDto.email,
+        subject: notificationEventDto.subject,
+        text: notificationEventDto.message,
       };
 
       await this.transporter.sendMail(mailOptions);
-      console.log(`Email sent `);
     } catch (error) {
       console.error('Error sending email:', error);
     }

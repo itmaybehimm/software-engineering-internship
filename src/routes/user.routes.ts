@@ -2,50 +2,43 @@ import { Router } from 'express';
 import passport from 'passport';
 import { checkRoles } from '../middlewares/roles.middleware';
 import { ROLE } from '../enums/user-role.enum';
-import { userController } from '../modules/user/user.module';
+// import { userController } from '../modules/user/user.module';
 import { addUserFilterMiddleware } from '../middlewares/user-filter.middlware';
-import { emailService } from '../modules/notification/notification.module';
+import { userController } from '../modules/user/user.module';
 
-const router = Router();
+export const userRouter = Router();
 
-router.get(
+userRouter.get(
   '/',
   passport.authenticate('jwt', { session: false }),
   checkRoles([ROLE.ADMIN]),
   userController.getAllUsers,
 );
 
-router.get(
+userRouter.get(
   '/',
   passport.authenticate('jwt', { session: false }),
   checkRoles([ROLE.ADMIN]),
   userController.getAllUsers,
 );
 
-router.get(
+userRouter.get(
   '/:userId',
   passport.authenticate('jwt', { session: false }),
   addUserFilterMiddleware,
   userController.getUser,
 );
 
-router.patch(
+userRouter.patch(
   '/:userId',
   passport.authenticate('jwt', { session: false }),
   addUserFilterMiddleware,
   userController.updateUser,
 );
 
-router.delete(
+userRouter.delete(
   '/:userId',
   passport.authenticate('jwt', { session: false }),
   checkRoles([ROLE.ADMIN]),
   userController.deleteUser,
 );
-
-router.delete('/', (req, res, next) => {
-  emailService.sendAsync(3);
-  next();
-});
-
-export default router;

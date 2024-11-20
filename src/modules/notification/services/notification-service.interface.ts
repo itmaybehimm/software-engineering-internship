@@ -1,3 +1,5 @@
+import { NotificationEventDto } from '../../../dto/event/user/user-event.dto';
+
 export interface NotificationService {
-  sendAsync(userId: number): Promise<void>;
+  sendAsync(notificationMessage: NotificationEventDto): Promise<void>;
 }

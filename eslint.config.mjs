@@ -11,7 +11,7 @@ export default [
       '@typescript-eslint/no-unused-vars': [
         'warn',
         {
-          varsIgnorePattern: '^res$|^next$', // Ignore variables res and next
+          varsIgnorePattern: '^res$|^next$|^AppModuleInitalize$',
           argsIgnorePattern: '^res$|^next$', // Ignore arguments res and next
         },
       ],
